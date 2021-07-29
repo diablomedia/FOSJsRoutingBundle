@@ -170,20 +170,20 @@ You can prevent to expose a route by configuring it as below:
             expose: false
 
 Expose Route Options to JS
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
-| If you want to expose some options from the routing definition to the
-JS definitions
-| you can set the config parameter:
+If you want to expose some options from the routing definition to the JS definitions
+you can set the config parameter:
 
-.. code:: yaml
+.. code-block:: yaml
 
-    fos_js_routing.expose_options: true
+    fos_js_routing:
+        expose_options: true
 
 Every option which is defined in the exposed\_options option is then
 added to the generated JS routes.
 
-.. code:: yaml
+.. code-block:: yaml
 
     # app/config/routing.yml
     my_route_to_expose:
@@ -197,13 +197,19 @@ added to the generated JS routes.
 
 Or using annotations:
 
-.. code:: php
+.. code-block:: php
 
     // src/Acme/DemoBundle/Controller/DefaultController.php
     /**
-     * @Route("/foo/{id}/bar", name="my_route_to_expose", options={"expose"=true, exposed_options={callback="doStuff", is_single_page=true}})
+     * @Route("/foo/{id}/bar", name="my_route_to_expose", options={"expose"=true, "exposed_options"={"callback"="doStuff", "is_single_page"=true}})
      */
     public function exposedAction($foo)
+
+From the JS you can access these options like so:
+
+.. code-block:: javascript
+
+    Routing.getRoute('my_route_to_expose').options.is_single_page; // would be boolean value true
 
 Router service
 --------------
