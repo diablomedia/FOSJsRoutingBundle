@@ -29,11 +29,6 @@ class DumpCommand extends Command
     protected static $defaultName = 'fos:js-routing:dump';
 
     /**
-     * @var string
-     */
-    private $targetPath;
-
-    /**
      * @var ExposedRoutesExtractorInterface
      */
     private $extractor;
@@ -46,7 +41,7 @@ class DumpCommand extends Command
     /**
      * @var string
      */
-    private $rootDir;
+    private $projectDir;
 
     /**
      * @var string
@@ -58,11 +53,11 @@ class DumpCommand extends Command
      */
     private $exposeOptions;
 
-    public function __construct(ExposedRoutesExtractorInterface $extractor, SerializerInterface $serializer, $rootDir, $requestContextBaseUrl = null, $exposeOptions = false)
+    public function __construct(ExposedRoutesExtractorInterface $extractor, SerializerInterface $serializer, $projectDir, $requestContextBaseUrl = null, $exposeOptions = false)
     {
         $this->extractor = $extractor;
         $this->serializer = $serializer;
-        $this->rootDir = $rootDir;
+        $this->projectDir = $projectDir;
         $this->requestContextBaseUrl = $requestContextBaseUrl;
         $this->exposeOptions = $exposeOptions;
 
@@ -107,18 +102,25 @@ class DumpCommand extends Command
                 InputOption::VALUE_NONE,
                 'Pretty print the JSON.'
             )
+            ->addOption(
+                'domain',
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Specify expose domain',
+                array()
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!in_array($input->getOption('format'), array('js', 'json'))) {
+        if (!in_array($input->getOption('format'), array('js', 'json'))) {
             $output->writeln('<error>Invalid format specified. Use js or json.</error>');
             return 1;
         }
 
         $callback = $input->getOption('callback');
-        if(empty($callback)) {
+        if (empty($callback)) {
             $output->writeln('<error>If you include --callback it must not be empty. Do you perhaps want --format=json</error>');
             return 1;
         }
@@ -138,12 +140,15 @@ class DumpCommand extends Command
      */
     private function doDump(InputInterface $input, OutputInterface $output)
     {
+        $domain = $input->getOption('domain');
+
         $extractor = $this->extractor;
         $serializer = $this->serializer;
         $targetPath = $input->getOption('target') ?:
             sprintf(
-                '%s/../web/js/fos_js_routes.%s',
-                $this->rootDir,
+                '%s/web/js/fos_js_routes%s.%s',
+                $this->projectDir,
+                empty($domain) ? '' : ('_' . implode('_', $domain)),
                 $input->getOption('format')
             );
 
@@ -176,13 +181,14 @@ class DumpCommand extends Command
                 $extractor->getPort(),
                 $extractor->getScheme(),
                 null,
+                $domain,
                 $this->exposeOptions
             ),
             'json',
             $params
         );
 
-        if('js' == $input->getOption('format')) {
+        if ('js' == $input->getOption('format')) {
             $content = sprintf("%s(%s);", $input->getOption('callback'), $content);
         }
 

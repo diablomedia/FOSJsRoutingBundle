@@ -22,9 +22,20 @@ class RoutesResponse
     private $port;
     private $scheme;
     private $locale;
+    private $domains;
     private $exposeRouteOptions;
 
-    public function __construct($baseUrl, RouteCollection $routes = null, $prefix = null, $host = null, $port = null, $scheme = null, $locale = null, $exposeRouteOptions = false)
+    public function __construct(
+        $baseUrl,
+        RouteCollection $routes = null,
+        $prefix = null,
+        $host = null,
+        $port = null,
+        $scheme = null,
+        $locale = null,
+        $domains = array(),
+        $exposeRouteOptions = false
+    )
     {
         $this->baseUrl            = $baseUrl;
         $this->routes             = $routes ?: new RouteCollection();
@@ -33,6 +44,7 @@ class RoutesResponse
         $this->port    = $port;
         $this->scheme             = $scheme;
         $this->locale             = $locale;
+        $this->domains            = $domains;
         $this->exposeRouteOptions = $exposeRouteOptions;
     }
 
@@ -45,6 +57,22 @@ class RoutesResponse
     {
         $exposedRoutes = array();
         foreach ($this->routes->all() as $name => $route) {
+            if (!$route->hasOption('expose')) {
+                $domain = 'default';
+            } else {
+                $domain = $route->getOption('expose');
+                $domain = is_string($domain) ? ($domain === 'true' ? 'default' : $domain) : 'default';
+            }
+
+
+            if (count($this->domains) === 0) {
+                if ($domain !== 'default') {
+                    continue;
+                }
+            } elseif (!in_array($domain, $this->domains, true)) {
+                continue;
+            }
+
             $compiledRoute = $route->compile();
             $defaults      = array_intersect_key(
                 $route->getDefaults(),
@@ -91,5 +119,10 @@ class RoutesResponse
     public function getScheme()
     {
         return $this->scheme;
+    }
+
+    public function getLocale()
+    {
+        return $this->locale;
     }
 }
