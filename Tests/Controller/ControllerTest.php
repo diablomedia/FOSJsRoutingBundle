@@ -85,7 +85,7 @@ class ControllerTest extends TestCase
 
         $response = $controller->indexAction($this->getRequest('/'), 'json');
 
-        $this->assertEquals('{"base_url":"","routes":{"literal":{"tokens":[["text","\/homepage"]],"defaults":[],"requirements":[],"hosttokens":[]},"blog":{"tokens":[["variable","\/","[^\/]++","slug"],["text","\/blog-post"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"options":{"whatever":false,"angular_controller":"test"}}},"prefix":"","host":"","scheme":""}', $response->getContent());
+        $this->assertEquals('{"base_url":"","routes":{"literal":{"tokens":[["text","\/homepage"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"blog":{"tokens":[["variable","\/","[^\/]++","slug"],["text","\/blog-post"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[],"options":{"whatever":false,"angular_controller":"test"}}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
     }
 
     public function testConfigCache()
@@ -179,14 +179,32 @@ class ControllerTest extends TestCase
     {
         $routes = new RouteCollection();
         $routes->add('homepage', new Route('/'));
-        $routes->add('admin_index', new Route('/admin', array(), array(),
-            array('expose' => 'admin')));
-        $routes->add('admin_pages', new Route('/admin/path', array(), array(),
-            array('expose' => 'admin')));
-        $routes->add('blog_index', new Route('/blog', array(), array(),
-            array('expose' => 'blog'), 'localhost'));
-        $routes->add('blog_post', new Route('/blog/{slug}', array(), array(),
-            array('expose' => 'blog'), 'localhost'));
+        $routes->add('admin_index', new Route(
+            '/admin',
+            array(),
+            array(),
+            array('expose' => 'admin')
+        ));
+        $routes->add('admin_pages', new Route(
+            '/admin/path',
+            array(),
+            array(),
+            array('expose' => 'admin')
+        ));
+        $routes->add('blog_index', new Route(
+            '/blog',
+            array(),
+            array(),
+            array('expose' => 'blog'),
+            'localhost'
+        ));
+        $routes->add('blog_post', new Route(
+            '/blog/{slug}',
+            array(),
+            array(),
+            array('expose' => 'blog'),
+            'localhost'
+        ));
 
         $controller = new Controller(
             $this->getSerializer(),
@@ -197,23 +215,35 @@ class ControllerTest extends TestCase
 
         $this->assertEquals('{"base_url":"","routes":{"homepage":{"tokens":[["text","\/"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
 
-        $response = $controller->indexAction($this->getRequest('/',
-            'GET', array('domain' => 'admin')), 'json');
+        $response = $controller->indexAction($this->getRequest(
+            '/',
+            'GET',
+            array('domain' => 'admin')
+        ), 'json');
 
         $this->assertEquals('{"base_url":"","routes":{"admin_index":{"tokens":[["text","\/admin"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"admin_pages":{"tokens":[["text","\/admin\/path"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
 
-        $response = $controller->indexAction($this->getRequest('/',
-            'GET', array('domain' => 'blog')), 'json');
+        $response = $controller->indexAction($this->getRequest(
+            '/',
+            'GET',
+            array('domain' => 'blog')
+        ), 'json');
 
         $this->assertEquals('{"base_url":"","routes":{"blog_index":{"tokens":[["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]},"blog_post":{"tokens":[["variable","\/","[^\/]++","slug"],["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
 
-        $response = $controller->indexAction($this->getRequest('/',
-            'GET', array('domain' => 'admin,blog')), 'json');
+        $response = $controller->indexAction($this->getRequest(
+            '/',
+            'GET',
+            array('domain' => 'admin,blog')
+        ), 'json');
 
         $this->assertEquals('{"base_url":"","routes":{"admin_index":{"tokens":[["text","\/admin"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"admin_pages":{"tokens":[["text","\/admin\/path"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"blog_index":{"tokens":[["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]},"blog_post":{"tokens":[["variable","\/","[^\/]++","slug"],["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
 
-        $response = $controller->indexAction($this->getRequest('/',
-            'GET', array('domain' => 'default,admin,blog')), 'json');
+        $response = $controller->indexAction($this->getRequest(
+            '/',
+            'GET',
+            array('domain' => 'default,admin,blog')
+        ), 'json');
 
         $this->assertEquals('{"base_url":"","routes":{"homepage":{"tokens":[["text","\/"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"admin_index":{"tokens":[["text","\/admin"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"admin_pages":{"tokens":[["text","\/admin\/path"]],"defaults":[],"requirements":[],"hosttokens":[],"methods":[],"schemes":[]},"blog_index":{"tokens":[["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]},"blog_post":{"tokens":[["variable","\/","[^\/]++","slug"],["text","\/blog"]],"defaults":[],"requirements":[],"hosttokens":[["text","localhost"]],"methods":[],"schemes":[]}},"prefix":"","host":"","port":null,"scheme":"","locale":"en"}', $response->getContent());
     }
