@@ -20,25 +20,25 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class RoutesResponseNormalizer implements NormalizerInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize($data, $format = null, array $context = array())
     {
         return array(
-            'base_url' => $object->getBaseUrl(),
-            'routes'   => $object->getRoutes(),
-            'prefix'   => $object->getPrefix(),
-            'host'     => $object->getHost(),
-            'port'     => $object->getPort(),
-            'scheme'   => $object->getScheme(),
-            'locale'   => $object->getLocale(),
+            'base_url' => $data->getBaseUrl(),
+            'routes'   => $data->getRoutes(),
+            'prefix'   => $data->getPrefix(),
+            'host'     => $data->getHost(),
+            'port'     => $data->getPort(),
+            'scheme'   => $data->getScheme(),
+            'locale'   => $data->getLocale(),
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization($data, $format = null)
     {
         return $data instanceof RoutesResponse;
     }

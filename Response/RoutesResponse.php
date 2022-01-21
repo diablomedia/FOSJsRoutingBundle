@@ -15,29 +15,45 @@ use Symfony\Component\Routing\RouteCollection;
 
 class RoutesResponse
 {
+    private $baseUrl;
     private $routes;
+    private $prefix;
+    private $host;
+    private $port;
+    private $scheme;
+    private $locale;
+    private $domains;
+    private $exposeRouteOptions;
 
     public function __construct(
-        private string $baseUrl,
+        $baseUrl,
         RouteCollection $routes = null,
-        private ?string $prefix = null,
-        private ?string $host = null,
-        private ?string $port = null,
-        private ?string $scheme = null,
-        private ?string $locale = null,
-        private array $domains = [],
-        private bool $exposeRouteOptions = false
+        $prefix = null,
+        $host = null,
+        $port = null,
+        $scheme = null,
+        $locale = null,
+        $domains = array(),
+        $exposeRouteOptions = false
     )
     {
-        $this->routes  = $routes ?: new RouteCollection();
+        $this->baseUrl            = $baseUrl;
+        $this->routes             = $routes ?: new RouteCollection();
+        $this->prefix             = $prefix;
+        $this->host               = $host;
+        $this->port    = $port;
+        $this->scheme             = $scheme;
+        $this->locale             = $locale;
+        $this->domains            = $domains;
+        $this->exposeRouteOptions = $exposeRouteOptions;
     }
 
-    public function getBaseUrl(): string
+    public function getBaseUrl()
     {
         return $this->baseUrl;
     }
 
-    public function getRoutes(): array
+    public function getRoutes()
     {
         $exposedRoutes = array();
         foreach ($this->routes->all() as $name => $route) {
@@ -85,27 +101,27 @@ class RoutesResponse
         return $exposedRoutes;
     }
 
-    public function getPrefix(): ?string
+    public function getPrefix()
     {
         return $this->prefix;
     }
 
-    public function getHost(): ?string
+    public function getHost()
     {
         return $this->host;
     }
 
-    public function getPort(): ?string
+    public function getPort()
     {
         return $this->port;
     }
 
-    public function getScheme(): ?string
+    public function getScheme()
     {
         return $this->scheme;
     }
 
-    public function getLocale(): ?string
+    public function getLocale()
     {
         return $this->locale;
     }

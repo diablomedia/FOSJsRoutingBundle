@@ -16,7 +16,6 @@
         };
     }
 }(this, function () {
-    var exports = {};
     <%= contents %>
 
     return { Router: Router, Routing: Routing };

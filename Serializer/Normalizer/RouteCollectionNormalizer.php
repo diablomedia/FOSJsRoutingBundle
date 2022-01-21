@@ -22,11 +22,11 @@ class RouteCollectionNormalizer implements NormalizerInterface
     /**
      * {@inheritDoc}
      */
-    public function normalize(mixed $object, string $format = null, array $context = array()): array
+    public function normalize($data, $format = null, array $context = array())
     {
         $collection = array();
 
-        foreach ($object->all() as $name => $route) {
+        foreach ($data->all() as $name => $route) {
             $collection[$name] = array(
                 'path'         => $route->getPath(),
                 'host'         => $route->getHost(),
@@ -45,7 +45,7 @@ class RouteCollectionNormalizer implements NormalizerInterface
     /**
      * {@inheritDoc}
      */
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization($data, $format = null)
     {
         return $data instanceof RouteCollection;
     }

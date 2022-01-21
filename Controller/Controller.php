@@ -27,7 +27,30 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Controller
 {
-    protected CacheControlConfig $cacheControlConfig;
+    /**
+     * @var mixed
+     */
+    protected $serializer;
+
+    /**
+     * @var ExposedRoutesExtractorInterface
+     */
+    protected $exposedRoutesExtractor;
+
+    /**
+     * @var CacheControlConfig
+     */
+    protected $cacheControlConfig;
+
+    /**
+     * @var boolean
+     */
+    protected $debug;
+
+    /**
+     * @var boolean
+     */
+    private $exposeRouteOptions;
 
     /**
      * Default constructor.
@@ -38,12 +61,19 @@ class Controller
      * @param boolean                         $debug
      * @param boolean                         $exposeRouteOptions
      */
-    public function __construct(private mixed $serializer, private ExposedRoutesExtractorInterface $exposedRoutesExtractor, array $cacheControl = array(), private bool $debug = false, private bool $exposeRouteOptions = false)
+    public function __construct($serializer, ExposedRoutesExtractorInterface $exposedRoutesExtractor, array $cacheControl = array(), $debug = false, $exposeRouteOptions = false)
     {
+        $this->serializer             = $serializer;
+        $this->exposedRoutesExtractor = $exposedRoutesExtractor;
         $this->cacheControlConfig     = new CacheControlConfig($cacheControl);
+        $this->debug                  = $debug;
+        $this->exposeRouteOptions     = $exposeRouteOptions;
     }
 
-    public function indexAction(Request $request, $_format): Response
+    /**
+     * indexAction action.
+     */
+    public function indexAction(Request $request, $_format)
     {
         $session = $request->hasSession() ? $request->getSession() : null;
 

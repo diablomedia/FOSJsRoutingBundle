@@ -10,6 +10,10 @@ to combine the routes with the other JavaScript files in assetic.
 
 .. code-block:: bash
 
+    # Symfony 2
+    $ php app/console fos:js-routing:dump
+    
+    # Symfony 3
     $ php bin/console fos:js-routing:dump
 
 Instead of the line
@@ -43,10 +47,8 @@ Or inside assetic, do
 .. tip::
 
     If you are using JMSI18nRoutingBundle, you need to run the command with the
-    ``--locale`` parameter and a custom ``--target`` once for each locale you use.
-    Then adjust your include path accordingly. Note that you can only load the dump
-    of one locale at once in your html as each following dump would overwrite the
-    data of the previous one.
+    ``--locale`` parameter once for each locale you use and adjust your include
+    paths accordingly.
 
 fos:js-routing:debug
 --------------------
@@ -55,6 +57,9 @@ This command lists all exposed routes:
 
 .. code-block:: bash
 
+    # Symfony 2
+    $ php app/console fos:js-routing:debug [name]
+    
     # Symfony 3
     $ php bin/console fos:js-routing:debug [name]
 
