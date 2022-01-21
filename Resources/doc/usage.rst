@@ -3,17 +3,19 @@ Usage
 
 In applications not using webpack add these two lines in your layout:
 
-.. configuration-block::
+**With Twig:**
 
-    .. code-block:: html+twig
+.. code-block:: twig
 
-        <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
-        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
-    .. code-block:: html+php
+**With PHP:**
 
-        <script src="<?php echo $view['assets']->getUrl('bundles/fosjsrouting/js/router.js') ?>"></script>
-        <script src="<?php echo $view['router']->generate('fos_js_routing_js', array('callback' => 'fos.Router.setData')) ?>"></script>
+.. code-block:: html+php
+
+    <script src="<?php echo $view['assets']->getUrl('bundles/fosjsrouting/js/router.js') ?>"></script>
+    <script src="<?php echo $view['router']->generate('fos_js_routing_js', array('callback' => 'fos.Router.setData')) ?>"></script>
 
 .. note::
 
@@ -26,7 +28,6 @@ and export your routes to json, this command will create a json file into the ``
 
 .. code-block:: bash
 
-    # Symfony 3
     bin/console fos:js-routing:dump --format=json
 
 If you are using Flex, probably you want to dump your routes into the ``public`` folder
@@ -65,44 +66,65 @@ Or if you want to generate **absolute URLs**:
 
 Assuming some route definitions:
 
-.. configuration-block::
+**With attributes:**
 
-    .. code-block:: php-annotations
+.. code-block:: php
 
-        // src/AppBundle/Controller/DefaultController.php
+    // src/AppBundle/Controller/DefaultController.php
 
-        /**
-         * @Route("/foo/{id}/bar", options={"expose"=true}, name="my_route_to_expose")
-         */
-        public function indexAction($foo) {
-            // ...
-        }
+    #[Route(path: '/foo/{id}/bar', name: 'my_route_to_expose', options: ['expose' => true])]
+    public function indexAction($foo) {
+        // ...
+    }
 
-        /**
-         * @Route("/blog/{page}",
-         *     defaults = { "page" = 1 },
-         *     options = { "expose" = true },
-         *     name = "my_route_to_expose_with_defaults",
-         * )
-         */
-        public function blogAction($page) {
-            // ...
-        }
+    #[Route(path: '/blog/{page}', name: 'my_route_to_expose_with_defaults', options: ['expose' => true], defaults: ['page' => 1])]
+    public function blogAction($page) {
+        // ...
+    }
 
-    .. code-block:: yaml
+**With YAML:**
 
-        # app/config/routing.yml
-        my_route_to_expose:
-            pattern: /foo/{id}/bar
-            defaults: { _controller: AppBundle:Default:index }
-            options:
-                expose: true
+.. code-block:: yaml
 
-        my_route_to_expose_with_defaults:
-            pattern: /blog/{page}
-            defaults: { _controller: AppBundle:Default:blog, page: 1 }
-            options:
-                expose: true
+    # app/config/routing.yml
+    my_route_to_expose:
+        pattern: /foo/{id}/bar
+        defaults: { _controller: AppBundle:Default:index }
+        options:
+            expose: true
+
+    my_route_to_expose_with_defaults:
+        pattern: /blog/{page}
+        defaults: { _controller: AppBundle:Default:blog, page: 1 }
+        options:
+            expose: true
+
+**With annotations (deprecated):**
+
+.. code-block:: php
+
+    // src/AppBundle/Controller/DefaultController.php
+
+    /**
+     * @Route("/foo/{id}/bar", options={"expose"=true}, name="my_route_to_expose")
+     */
+    public function indexAction($foo) {
+        // ...
+    }
+
+    /**
+     * @Route("/blog/{page}",
+     *     defaults = { "page" = 1 },
+     *     options = { "expose" = true },
+     *     name = "my_route_to_expose_with_defaults",
+     * )
+     */
+    public function blogAction($page) {
+        // ...
+    }
+
+
+
 
 You can use the ``generate()`` method that way:
 

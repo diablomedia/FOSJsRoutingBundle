@@ -28,43 +28,12 @@ class DumpCommand extends Command
 {
     protected static $defaultName = 'fos:js-routing:dump';
 
-    /**
-     * @var ExposedRoutesExtractorInterface
-     */
-    private $extractor;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var string
-     */
-    private $projectDir;
-
-    /**
-     * @var string
-     */
-    private $requestContextBaseUrl;
-
-    /**
-     * @var bool
-     */
-    private $exposeOptions;
-
-    public function __construct(ExposedRoutesExtractorInterface $extractor, SerializerInterface $serializer, $projectDir, $requestContextBaseUrl = null, $exposeOptions = false)
+    public function __construct(private ExposedRoutesExtractorInterface $extractor, private SerializerInterface $serializer, private string $projectDir, private ?string $requestContextBaseUrl = null, private bool $exposeOptions = false)
     {
-        $this->extractor = $extractor;
-        $this->serializer = $serializer;
-        $this->projectDir = $projectDir;
-        $this->requestContextBaseUrl = $requestContextBaseUrl;
-        $this->exposeOptions = $exposeOptions;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('fos:js-routing:dump')
@@ -87,7 +56,7 @@ class DumpCommand extends Command
                 'target',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Override the target directory to dump routes in.'
+                'Override the target file to dump routes in.'
             )
             ->addOption(
                 'locale',
@@ -112,7 +81,7 @@ class DumpCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if (!in_array($input->getOption('format'), array('js', 'json'))) {
             $output->writeln('<error>Invalid format specified. Use js or json.</error>');
@@ -134,11 +103,8 @@ class DumpCommand extends Command
 
     /**
      * Performs the routes dump.
-     *
-     * @param InputInterface  $input  The command input
-     * @param OutputInterface $output The command output
      */
-    private function doDump(InputInterface $input, OutputInterface $output)
+    private function doDump(InputInterface $input, OutputInterface $output): void
     {
         $domain = $input->getOption('domain');
 
@@ -180,7 +146,7 @@ class DumpCommand extends Command
                 $extractor->getHost(),
                 $extractor->getPort(),
                 $extractor->getScheme(),
-                null,
+                $input->getOption('locale'),
                 $domain,
                 $this->exposeOptions
             ),
